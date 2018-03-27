@@ -132,10 +132,21 @@ plugins: [
 ```
 
 ### 抽取和压缩CSS文件
-- 安装：抽离 `npm i -D extract-text-webpack-plugin`
-- 安装：压缩 `npm i -D optimize-css-assets-webpack-plugin`
+- 安装：抽离 `npm i -D extract-text-webpack-plugin@2.1.2`
+- 安装：压缩 `npm i -D optimize-css-assets-webpack-plugin@3.2.0`
 - [webpack 抽离CSS文档](https://doc.webpack-china.org/plugins/extract-text-webpack-plugin/)
 - [压缩抽离后的CSS](https://www.npmjs.com/package/optimize-css-assets-webpack-plugin)
+- 注意:要下载对应的版本，否则会报错
+```js
+    # 对于 webpack 2
+    npm install --save-dev extract-text-webpack-plugin@2.1.2
+
+    # 对于 webpack 1
+    npm install --save-dev extract-text-webpack-plugin@1.0.1
+
+    For webpack v3 or below please use optimize-css-assets-webpack-plugin@3.2.0. The optimize-css-assets-webpack-plugin@4.0.0 version and above supports webpack v4.
+
+```
 
 ```js
 // 分离 css 到独立的文件中
