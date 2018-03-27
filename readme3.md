@@ -1,10 +1,3 @@
-## vue-cli
-- cli 脚手架工具（通过命令行的方式，快速搭建一个项目的目录结构）
-- 全局安装：`npm install -g vue-cli`
-- 基本使用：`vue init webpack 项目名称`
-- [vue-cli github](https://github.com/vuejs/vue-cli)
-- [vue-cli 目录结构](https://segmentfault.com/a/1190000007880723)
-- [vue-cli 介绍](https://juejin.im/post/584e48b2ac502e006c74a120)
 
 ```
 开发期间运行项目：npm run dev
@@ -306,3 +299,12 @@ output: {
   chunkFilename: 'js/[name].[chunkhash].js',
 },
 ```
+
+## vue-cli
+- cli 脚手架工具（通过命令行的方式，快速搭建一个项目的目录结构）
+- 全局安装：`npm install -g vue-cli`
+- 基本使用：`vue init webpack 项目名称`
+- [vue-cli github](https://github.com/vuejs/vue-cli)
+- [vue-cli 目录结构](https://segmentfault.com/a/1190000007880723)
+- [vue-cli 介绍](https://juejin.im/post/584e48b2ac502e006c74a120)
+
