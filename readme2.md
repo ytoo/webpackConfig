@@ -1,4 +1,96 @@
-# VUE
+## 安装webpack
+- 全局安装：`npm i -g webpack`
+  + 目的：在任何目录中通过CLI使用 `webpack` 这个命令
+- 项目安装：`npm i -D webpack`
+  + 目的：执行当前项目的构建
+
+## webpack的基本使用
+- 安装：`npm i -D webpack`
+- webpack的使用方式：配置文件（`webpack.config.js`）
+- 四个核心概念：**入口(entry)**、**输出(output)**、**加载器loader**、**插件(plugins)**
+
+### 配置文件方式（推荐）
+
+```js
+/* 
+  webpack.config.js
+  运行命令：webpack  （需要配置webpack.config.js文件中的module.exports中的entry和output）
+  entry 入口的配置说明：
+  https://doc.webpack-china.org/concepts/entry-points
+*/
+var path = require('path')
+module.exports = {
+  // 入口文件
+  entry: path.join(__dirname, 'src/js/main.js'), 
+  // 输出文件
+  output: {
+    path: path.join(__dirname, 'dist'), // 输出文件的路径,输出在硬盘的指定的文件夹中
+    filename: 'bundle.js' // 输出文件的名称
+  }
+}
+```
+
+## webpack-dev-server
+- 安装：`npm i -D webpack-dev-server`
+- 作用：配合webpack，创建开发环境（服务器、自动编译、监视文件变化等），提高开发效率
+- 注意：无法直接在终端中执行 `webpack-dev-server`，需要通过 `package.json` 的 `scripts` 实现，或者需要配置config.js中的module.exports中的devServer项
+- 使用方式：`npm run dev`
+- 注意：**配置到目前这一步，只能启动默认端口8080的本地服务，需要手动在地址栏输入地址才能访问页面，这就需要继续配置`package.json`文件中的`scripts`项来自动开启服务器、自动编译、监视文件变化、自动打开页面，并实现热更新**
+
+```json
+"scripts": {
+  "dev": "webpack-dev-server"
+}
+```
+
+### 优势
+- 1 开启服务器
+- 2 监视文件的变化，重新编译打包，自动刷新浏览器
+- 3 将输出的文件存储在内存（注意：这是存储的位置是内存，不是在硬盘中的文件里面）中，提高编译和加载速度，效率更高
+
+- 注意：开启服务自动打开页面时，webpack输出的文件被放到项目根目录中
+  + `webpack output is served from /`
+  + 在`index.html`页面中需要通过 `/bundle.js` 来引入文件，因为这是存储的位置是当前目录下的内存，不是硬盘中的当前文件的里面
+
+### `package.json` 中 `scripts`配置说明 - CLI配置
+- `--contentBase` ：主页面目录
+  + `--contentBase ./`：当前工作目录
+  + `--contentBase ./src`：webpack-dev-server 启动的服务器，我们在浏览器中打开的时候会自动展示 ./src 中的 index.html 文件
+- `--open` ：自动打开浏览器
+- `--port` ：端口号
+- `--hot` ：热更新，只加载修改的文件(按需加载修改的内容)，而非全部加载（更新加载时不用刷新浏览器）
+- 使用方式：`npm run dev`
+
+```js
+/* package.json */
+{
+  "scripts": {
+    "dev": "webpack-dev-server --contentBase ./src --open --port 8888 --hot"
+  }
+}
+```
+
+- 注意：**以上index.html中的bundle.js是需要手动引入的，即<script type="text/javascript" src="/bundle.js"></script>,但是我们可以使用`html-webpack-plugin`插件让`bundle.js`、`css`等文件自动被引入**
+
+
+## html-webpack-plugin 插件
+- 安装：`npm i -D html-webpack-plugin`
+- 作用：根据模板，自动生成html页面
+- 优势：页面存储在内存中，自动引入`bundle.js`、`css`等文件
+
+```js
+/* webpack.config.js */
+const htmlWebpackPlugin = require('html-webpack-plugin')
+// ...
+plugins: [
+  new htmlWebpackPlugin({
+    // 模板页面路径
+    template: path.join(__dirname, './index.html'),
+    // 在根目录内存中生成页面名字，名字可自定义，但一般默认为index.html
+    filename: 'index.html'
+  })
+]
+```
 
 ## webpack
 ## Loaders（加载器）
@@ -21,13 +113,9 @@
 
 ```js
 /* index.js */
-
 // 导入 css 文件
-import './css/app.css'
-
-
+import './css/index.css'
 /* webpack.config.js */
-
 // 配置各种资源文件的loader加载器
 module:{
   // 配置匹配规则
@@ -58,7 +146,6 @@ module:{
 }
 ```
 
-
 ## 图片和字体打包
 - 安装：`npm i -D url-loader file-loader`
 - `file-loader`：加载并重命名(使用md5进行加密处理，生成的名字是唯一的)文件（图片、字体 等）
@@ -66,12 +153,10 @@ module:{
 
 ```js
 /* webpack.config.js */
-
 module:{
   rules:[
     // 打包 图片文件
     { test: /\.(jpg|png|gif|jpeg)$/, use: 'url-loader' },
-
     // 打包 字体文件
     { test: /\.(woff|woff2|eot|ttf|otf)$/, use: 'file-loader' }
   ]
@@ -89,7 +174,6 @@ module:{
 
 ```js
 /* webpack.config.js */
-
 module: {
   rules: [
     // {test: /\.(jpg|png|gif|jpeg)$/, use: 'url-loader?limit=100'},
@@ -113,7 +197,6 @@ module: {
 - 2 `url-loader` 会将字体文件解析为 base64编码格式的字符串，嵌入到CSS样式中
 - 3 `file-loader` 以文件形式加载字体文件
 
-
 ## ES6语法 - class关键字
 - ES6以前，JS是没有class概念的，而是通过构造函数+原型的方式来实现的
 - 注意：ES6中的class仅仅是一个语法糖，并不是真正的类，与Java等服务端语言中的类是有区别的
@@ -130,7 +213,6 @@ class Person {
     this.isLoading = true
   }
 }
-
 console.log(Person.testName)
 ```
 
@@ -152,7 +234,6 @@ console.log(Person.testName)
 
 ```js
 /* webpack.config.js */
-
 module: {
   rules: [
     // exclude 排除，不需要编译的目录，提高编译速度
@@ -165,7 +246,6 @@ module: {
 
 ```json
 /* .babelrc */
-
 // 将来babel-loader运行的时候，会检查这个配置文件，并读取相关的语法和插件配置
 {
   "presets": ["es2015", "stage-0"],
@@ -188,23 +268,6 @@ babel原理：  https://zhuanlan.zhihu.com/p/27289600
 > Babel通过语法转换器，能够支持最新版本的JavaScript语法  
 
 - 作用：将浏览器无法识别的新语法转化为ES5代码
-- [ES6语法提案的批准流程](http://es6.ruanyifeng.com/#docs/intro#语法提案的批准流程)
-  + ES2015 也就是 ES6, 下一个要发布的ES7, 从 ES6 到 ES7之间经历了 5 个阶段
-  + 一般进入到 stage 4 就可以认为是下一个版本的语法了!
-
-```
-Stage 0 - Strawman（展示阶段）
-Stage 1 - Proposal（征求意见阶段）
-Stage 2 - Draft（草案阶段）
-Stage 3 - Candidate（候选人阶段）
-Stage 4 - Finished（定案阶段）
-
-Stage 0 is "i've got a crazy idea", 
-stage 1 is "this idea might not be stupid", 
-stage 2 is "let's use polyfills and transpilers to play with it", 
-stage 3 is "let's let browsers implement it and see how it goes", 
-stage 4 is "now it's javascript".
-```
 
 ### babel-polyfill 和 transform-runtime
 - 作用：实现浏览器对不支持API的兼容（兼容旧环境、填补）
@@ -212,7 +275,6 @@ stage 4 is "now it's javascript".
 - [transform-runtime](https://babeljs.io/docs/plugins/transform-runtime/)
 - 命令：`npm i -S babel-polyfill`
 - 命令：`npm i -D babel-plugin-transform-runtime` 和 `npm i -S babel-runtime`
-
 
 ```
 区别：
@@ -243,7 +305,7 @@ console.log(s)
 
 // webpack.config.js 配置
 module.exports = {
-  entry: ['babel-polyfill', './app/js']
+  entry: ['babel-polyfill',  path.join(__dirname, './src/js/main.js')]
 }
 ```
 
@@ -263,170 +325,3 @@ if (!String.prototype.padStart) {
   }
 }
 ```
-
-
-## vue单文件组件
-- [vue-loader](https://vue-loader.vuejs.org/zh-cn/)
-- single-file components(单文件组件)
-- 后缀名：`.vue`，该文件需要被预编译后才能在浏览器中使用
-- 注意：单文件组件依赖于两个包 **vue-loader** / **vue-template-compiler**
-- 安装：`npm i -D vue-loader vue-template-compiler`
-
-```html
-<!-- App.vue 示例代码： -->
-<template>
-  <div>
-    <h1>VUE 单文件组件示例 -- App.vue</h1>
-    <p>这是 模板内容</p>
-  </div>
-</template>
-
-<script>
-  // 组件中的逻辑代码
-  export default {}
-</script>
-
-<style>
-/* 组件样式 */
-h1 {
-  color: red;
-}
-</style>
-```
-
-```js
-// webpack.config.js 配置：
-module: {
-  rules: [
-    {
-      test: /\.vue$/,
-      loader: 'vue-loader'
-    }
-  ]
-}
-```
-
-### 使用单文件组件
-```js
-import Vue from 'vue'
-// 导入 App 组件
-import App from './App.vue'
-
-const vm = new Vue({
-  el: '#app',
-  // 通过 render 方法，渲染App组件
-  render: c => c(App)
-})
-```
-
-### 单文件组件+路由
-- [vue - Vue.use](https://cn.vuejs.org/v2/api/#Vue-use)
-
-```js
-import Vue from 'vue'
-import App from './App.vue'
-
-// ------------- vue路由配置 开始 --------------
-import Home from './components/home/Home.vue'
-import Login from './components/login/Login.vue'
-
-// 1 导入 路由模块
-import VueRouter from 'vue-router'
-// 2 调用use方法使用插件
-Vue.use(VueRouter)
-// 3 创建路由对象
-const router = new VueRouter({
-  routes: [
-    { path: '/home', component: Home },
-    { path: '/login', component: Login }
-  ]
-})
-
-// ------------- vue路由配置 结束 --------------
-
-const vm = new Vue({
-  el: '#app',
-  render: c => c(App),
-  // 4 挂载到 vue 实例中
-  router
-})
-```
-
-## Mint-UI
-- 基于 Vue.js 的移动端组件库
-- [Mint-UI](http://mint-ui.github.io/#!/zh-cn)
-
-### 快速开始
-- 安装：`npm i -S mint-ui`
-
-```js
-// 1 导入 mint-ui模块
-import MintUI from 'mint-ui'
-// 2 导入 样式
-import 'mint-ui/lib/style.css'
-// 3 注册插件
-Vue.use(MintUI)
-```
-
-## MUI
-- [MUI](http://dev.dcloud.net.cn/mui/)
-- 使用：从github下载包，找到dist文件夹，只需要导入样式即可
-
-```js
-// 导入样式
-import './lib/mui/css/mui.min.css'
-```
-
-## ElementUI
-- 安装：`npm i -S element-ui`
-- [饿了吗 - ElementUI](http://element.eleme.io/#/zh-CN/component/quickstart)
-
-```js
-{
-  "presets": [
-    ["es2015", { "modules": false }], "stage-0"
-  ],
-
-  "plugins": [
-    ["component", [
-      {
-        "libraryName": "mint-ui",
-        "style": true
-      },
-      {
-        "libraryName": "element-ui",
-        "styleLibraryName": "theme-default"
-      }
-    ]]
-  ]
-}
-```
-
-## 代码托管 - oschina
-- [码云](https://gitee.com/)
-- 说明：使用方式跟github完全相同，并且是中文版（非常友好！！！）
-
-
-## ES6模块化 - import和export
-```js
-// a.js
-// export default 只能出现一次
-const num = 123
-export default num
-
-// main.js
-// 可以自定义接收名称
-// import num from './a'
-import num1 from './a'
-```
-
-```js
-// a.js
-export const str = 'abc'
-
-// main.js
-// 注意 导入名称 必须与 导出名称 相同
-// 注意 必须使用花括号
-import { str } from './a'
-```
-
