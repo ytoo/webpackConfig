@@ -15,14 +15,13 @@
 ### 创建项目发布配置文件
 - 开发期间配置文件：`webpack.config.js`
 - 项目发布配置文件：`webpack.prod.js` （文件名称非固定）
-- 命令：`webpack --config webpack.prod.js` 指定配置文件名称运行webpack
+- 命令：`webpack --display-error-details --config webpack.prod.js` 指定配置文件名称运行webpack
 - 参数：` --display-error-details` 用于显示webpack打包的错误信息
 
 ```json
 /* package.json */
-
 "scripts": {
-  "prod": "webpack --config webpack.prod.js"
+  "prod": "webpack --display-error-details --config webpack.prod.js"
 }
 ```
 
@@ -40,26 +39,26 @@
 - 6 。。。
 
 ### 处理图片路径
-- 注意：如果`limit`小于比图片大，那么图片将被转化为`base64`编码格式
+- 注意：如果图片大小小于`limit`值，那么图片将被转化为`base64`编码格式
 - [name参数介绍](https://github.com/webpack-contrib/file-loader)
 
 ```js
 // 处理URL路径的loader
-
 {
   test: /\.(jpg|png|gif|bmp|jpeg)$/, 
   use: {
     loader: 'url-loader',
     options: {
       limit: 8192,
-      // name参数：重命名文件以及修改文件路径
-      name: 'images/imgs-[hash:7].[ext]'
+      // name参数：重命名文件以及将打包后文件放至指定路径目录下
+      name: 'images/[hash:7].[ext]'
     }
   }
 },
 ```
 
 ### 自动删除dist目录
+- 注意：由于打包时不能一次性的打包好，可能需要修改后再次打包，而每次打包都需要手动删除dist文件，所以需要插件自动来删除
 - 安装：`npm i -D clean-webpack-plugin`
 
 ```js
@@ -67,7 +66,7 @@
 const cleanWebpackPlugin = require('clean-webpack-plugin')
 
 plugins: [
-  // 创建一个删除文件夹的插件，删除dist目录
+  // 创建一个删除文件夹的插件，删除dist目录，也可以设置删除多个文件，直接写入数组项即可
   new cleanWebpackPlugin(['dist'])
 ]
 ```
@@ -81,17 +80,15 @@ plugins: [
 
 // 入口 -- 打包文件的入口
 entry: {
-  // 项目代码入口
+  // 项目代码入口(此处的app名字可自定义)
   app: path.join(__dirname, './src/js/main.js'),
-  // 第三方包入口
+  // 第三方包入口(此处的vendor名字可自定义)
   vendor: ['vue', 'vue-router', 'vue-resource']
 },
-
 output: {
-  // 修改输出文件的名称
+  // 修改输出文件的名称,此处可以根据上述入口中的app、vendor名字生成对应的文件名
   filename: 'js/[name].[chunkhash].js',
 },
-
 plugins: [
   // 分离第三方包（公共包文件）
   new webpack.optimize.CommonsChunkPlugin({
@@ -114,8 +111,7 @@ plugins: [
       warnings: false
     }
   }),
-
-  // 指定环境，设置为生产环境
+  // 指定环境，设置为生产环境，会将vue在生产环境中引入的文件为压缩版本
   new webpack.DefinePlugin({
     'process.env': {
       'NODE_ENV': JSON.stringify('production')
@@ -147,11 +143,8 @@ const ExtractTextPlugin = require("extract-text-webpack-plugin");
 // 压缩 css 资源文件
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 
-// bug描述: 生成后面的css文件中图片路径错误，打开页面找不到图片
-// 解决：google搜索 webpack css loader 样式图片路径
+// bug描述: 生成后面的css文件中引入图片路径错误，打开页面找不到图片
 output: {
-  // ...
-
   // https://doc.webpack-china.org/configuration/output/#output-publicpath
   // 设置公共路径
   publicPath: '/',
@@ -258,10 +251,9 @@ plugins: [
 
 ```js
 /*
-  webpack.config.js
+  webpack.prod.js
   使用方式：在配置文件中添加一个新的插件 webpack.optimize.ModuleConcatenationPlugin
 */
-
 module.exports = {
   plugins: [
     // scope hoisting
@@ -282,7 +274,6 @@ module.exports = {
 ```js
 // 方式一: require.ensure()
 const NewsList = r => require.ensure([], () => r(require('../components/news/newslist.vue')), 'news')
-// const NewsInfo = r => require.ensure([], () => r(require('../components/news/newsinfo.vue')), 'news')
 
 // 方式二: import()
 const NewsInfo = () => import(/* webpackChunkName: "newsinfo" */ '../components/news/newsinfo.vue')
@@ -295,7 +286,7 @@ output: {
   path: path.join(__dirname, './dist'),
   filename: 'js/[name].[chunkhash].js',
   
-	// ------添加 chunkFilename, 指定输出js文件的名称------
+  // ------额外添加 chunkFilename, 指定输出js文件的名称，注意上述方式二中的webpackChunkName注释字段必须要写，否则无法生成指定的newsinfo文件名，一个模块内的组件对应的js名字可以命名为同一个------
   chunkFilename: 'js/[name].[chunkhash].js',
 },
 ```
@@ -307,4 +298,3 @@ output: {
 - [vue-cli github](https://github.com/vuejs/vue-cli)
 - [vue-cli 目录结构](https://segmentfault.com/a/1190000007880723)
 - [vue-cli 介绍](https://juejin.im/post/584e48b2ac502e006c74a120)
-
