@@ -4,19 +4,20 @@ const htmlWebpackPlugin = require('html-webpack-plugin')
 
 // 每次打包之前，自动删除文件夹
 const cleanWebpackPlugin = require('clean-webpack-plugin')
-
 // 分离 css 到独立的文件中
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 // 压缩 css 资源文件
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
+// 压缩图片
+const ImageminPlugin = require('imagemin-webpack-plugin').default
 
 module.exports = {
   // 入口
   entry: {
     // 项目代码入口
-    app: path.join(__dirname, './src/js/main.js'),
+    app: path.join(__dirname, './src/js/main1.js'),
     // 第三方包入口
-    vendor: ['vue', 'vue-router', 'vue-resource', 'vuex', 'moment', 'mint-ui', 'vue-preview']
+    vendor: ['vue','mint-ui']
   },
   // 出口
   output: {
@@ -55,8 +56,8 @@ module.exports = {
           loader: 'url-loader',
           options: {
             limit: 6518,
-            // name: 'images/imgs-[hash:7].[ext]'
-            // [name] 使用图片的名称作为最终生成的文件名称
+            // name: 'images/[hash:10].[ext]'
+            // [name] 使用图片的名称作为最终生成的文件名称,一个哈希值，数字10表示保留10位
             // [ext]  使用图片的默认后缀
             // name: '[name].[ext]'
             // images/ 表示图片生成后存放的路径
@@ -75,6 +76,7 @@ module.exports = {
           }
         }
       },
+     // 解析 .vue 单文件组件
       { test: /\.vue$/, use: 'vue-loader' },
     ]
   },
@@ -95,7 +97,7 @@ module.exports = {
         // 移除注释
         removeComments: true,
         // 移除属性中的双引号
-        removeAttributeQuotes: true
+        // removeAttributeQuotes: true
       }
     }),
 
@@ -109,18 +111,15 @@ module.exports = {
       // 将 entry 中指定的 ['vue', 'vue-router', 'vue-resource'] 打包到名为 vendor 的js文件中
       name: 'vendor',
     }),
-
     // 压缩js代码
     new webpack.optimize.UglifyJsPlugin({
-      sourceMap: true,
-
+    //   sourceMap: true,
       // 压缩
       compress: {
         // 移除警告
         warnings: false
       }
     }),
-
     // 指定环境，设置为生产环境
     // 开发期间我们使用vue的为压缩版本，项目上下了，只需要将环境修改为
     // 生产环境，那么，vue就会自动变为 压缩版本
@@ -135,8 +134,12 @@ module.exports = {
     new ExtractTextPlugin("css/style.css"),
     // 压缩抽离之后的css
     new OptimizeCssAssetsPlugin(),
-    
-    // 启用 scope hoisting
-    new webpack.optimize.ModuleConcatenationPlugin()
+    // Make sure that the plugin is after any plugins that add images
+    new ImageminPlugin({
+      disable: process.env.NODE_ENV == 'production', 
+      pngquant: {
+        quality: '95-100'
+      }
+    })
   ]
 }
