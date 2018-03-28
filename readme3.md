@@ -36,7 +36,6 @@
 - 3 处理`url-loader`参数
 - 4 自动删除`dist`目录
 - 5 分离第三方包
-- 6 。。。
 
 ### 处理图片路径
 - 注意：如果图片大小小于`limit`值，那么图片将被转化为`base64`编码格式
@@ -55,6 +54,25 @@
     }
   }
 },
+```
+
+### 压缩图片
+- 安装:`npm i -D imagemin-webpack-plugin `
+- 注意:`Requires node >=4.0.0`
+```js
+   /* webpack.prod.js */
+   const ImageminPlugin = require('imagemin-webpack-plugin').default
+
+   plugins: [
+    // Make sure that the plugin is after any plugins that add images
+    new ImageminPlugin({
+      disable: process.env.NODE_ENV == 'production', // 这个插件压缩图片需要时间，因此开发环境中关闭这个插件，在生产环境中打包压缩图片时开启。
+      pngquant: {
+        quality: '95-100' // 此处的数字越小，压缩的图片越小
+      }
+    })
+  ]
+
 ```
 
 ### 自动删除dist目录
@@ -107,7 +125,7 @@ plugins: [
   new webpack.optimize.UglifyJsPlugin({
     // 压缩
     compress: {
-      // 移除警告
+      // 移除警告,在UglifyJs删除没有用到的代码时不输出警告
       warnings: false
     }
   }),
@@ -193,7 +211,7 @@ new htmlWebpackPlugin({
     // 移除注释
     removeComments: true,
     // 移除属性中的双引号
-    removeAttributeQuotes: true
+     //removeAttributeQuotes: true 
   }
 }),
 ```
@@ -241,26 +259,6 @@ plugins: [
 - 2 通过 uglifyjs 移除被webpack标记为没有被使用的代码
   + 参考上面讲的压缩js配置
 
-## webpack 3 - Scope Hoisting （性能优化）
-- 作用：让 Webpack 打包出来的代码文件更小、运行的更快
-- 说明：只支持`ES2015`模块写法，不支持`CommonJS`模块使用
-- 命令：`webpack --display-optimization-bailout`
-  + 参数：打印出项目无法使用 Scope Hoisting 的原因
-- 注意：使用这个插件的时候，模块热替换将不起作用，所以最好只在代码优化的时候才使用这个插件
-- [webpack 3 新特性](https://juejin.im/entry/59704d47f265da6c4977ba6a)
-
-```js
-/*
-  webpack.prod.js
-  使用方式：在配置文件中添加一个新的插件 webpack.optimize.ModuleConcatenationPlugin
-*/
-module.exports = {
-  plugins: [
-    // scope hoisting
-    new webpack.optimize.ModuleConcatenationPlugin()
-  ]
-}
-```
 
 ## vue配合webpack实现路由按需加载
 - [Vue- 路由懒加载](https://router.vuejs.org/zh-cn/advanced/lazy-loading.html)
