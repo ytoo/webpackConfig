@@ -1,7 +1,7 @@
 
 ```
 开发期间运行项目：npm run dev
-项目打包： npm run build
+项目打包： npm run prod
 ```
 
 
