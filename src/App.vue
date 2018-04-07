@@ -18,9 +18,9 @@
     另一方面，当与现代化的工具链以及各种支持类库结合使用时，Vue 也完全能够为复杂的单页应用提供驱动。
 
     <mt-swipe :auto="2000">
-      <mt-swipe-item><img src="./images/theme1.png" alt=""></mt-swipe-item>
-      <mt-swipe-item><img src="./images/theme2.png" alt=""></mt-swipe-item>
-      <mt-swipe-item><img src="./images/theme3.png" alt=""></mt-swipe-item>
+      <mt-swipe-item><img src="./images/theme1.jpg" alt=""></mt-swipe-item>
+      <mt-swipe-item><img src="./images/theme2.jpg" alt=""></mt-swipe-item>
+      <mt-swipe-item><img src="./images/theme3.jpg" alt=""></mt-swipe-item>
     </mt-swipe>
   </div>
 </template>

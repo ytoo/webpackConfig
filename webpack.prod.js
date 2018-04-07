@@ -15,7 +15,7 @@ module.exports = {
   // 入口
   entry: {
     // 项目代码入口
-    app: path.join(__dirname, './src/js/main1.js'),
+    app: path.join(__dirname, './src/js/main.js'),
     // 第三方包入口
     vendor: ['vue','mint-ui']
   },

@@ -5,7 +5,7 @@ import MintUI from 'mint-ui'
 // 导入样式
 import 'mint-ui/lib/style.css'
 import "../css/index.css"
-import "../css/index.scss"
+// import "../css/index.scss"
 
 // 2 导入组件
 // 引入路由方式一：

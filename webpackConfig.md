@@ -130,6 +130,7 @@ module:{
 ### 使用webpack打包sass文件
 - 安装：`npm i -D sass-loader node-sass`
 - 注意：`sass-loader` 依赖于 `node-sass` 模块
+- [整理 node-sass 安装失败的原因及解决办法](https://segmentfault.com/a/1190000010984731)
 
 ```js
 /* webpack.config.js */
